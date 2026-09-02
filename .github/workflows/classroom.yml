@@ -21,12 +21,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Configurar JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Dar permissão de execução ao gradlew
+        run: chmod +x ./gradlew
+
       - name: Deve adicionar circulos
         id: adicionar-circulos
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: adicionar-circulos
-          command: gradle test --tests 'CircleTests.adicionarCirculos'
+          command: ./gradlew test --tests 'CircleTests.adicionarCirculos'
           timeout: 10
           max-score: 5
 
@@ -35,7 +44,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: adicionar-circulo-limite-invalido
-          command: gradle test --tests 'CircleTests.adicionarCirculoLimiteInvalido'
+          command: ./gradlew test --tests 'CircleTests.adicionarCirculoLimiteInvalido'
           timeout: 10
           max-score: 5
 
@@ -44,7 +53,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: adicionar-circulo-duplicado
-          command: gradle test --tests 'CircleTests.adicionarCirculoDuplicado'
+          command: ./gradlew test --tests 'CircleTests.adicionarCirculoDuplicado'
           timeout: 10
           max-score: 5
 
@@ -53,7 +62,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: buscando-circulo-existente
-          command: gradle test --tests 'CircleTests.buscandoCirculoExistente'
+          command: ./gradlew test --tests 'CircleTests.buscandoCirculoExistente'
           timeout: 10
           max-score: 5
 
@@ -62,7 +71,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: buscando-circulo-inexistente
-          command: gradle test --tests 'CircleTests.buscandoCirculoInexistente'
+          command: ./gradlew test --tests 'CircleTests.buscandoCirculoInexistente'
           timeout: 10
           max-score: 5
 
@@ -71,7 +80,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: recuperando-todos-os-circulos
-          command: gradle test --tests 'CircleTests.recuperandoTodosOsCirculos'
+          command: ./gradlew test --tests 'CircleTests.recuperandoTodosOsCirculos'
           timeout: 10
           max-score: 5
 
@@ -80,7 +89,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: removendo-circulo-existente
-          command: gradle test --tests 'CircleTests.removendoCirculoExistente'
+          command: ./gradlew test --tests 'CircleTests.removendoCirculoExistente'
           timeout: 10
           max-score: 5
 
@@ -89,7 +98,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: removendo-circulo-inexistente
-          command: gradle test --tests 'CircleTests.removendoCirculoInexistente'
+          command: ./gradlew test --tests 'CircleTests.removendoCirculoInexistente'
           timeout: 10
           max-score: 5
 
@@ -98,7 +107,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: atualizando-circulo-existente
-          command: gradle test --tests 'CircleTests.atualizandoCirculoExistente'
+          command: ./gradlew test --tests 'CircleTests.atualizandoCirculoExistente'
           timeout: 10
           max-score: 5
 
@@ -107,7 +116,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: atualizando-circulo-limite-invalido
-          command: gradle test --tests 'CircleTests.atualizandoCirculoLimiteInvalido'
+          command: ./gradlew test --tests 'CircleTests.atualizandoCirculoLimiteInvalido'
           timeout: 10
           max-score: 5
 
@@ -116,7 +125,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: atualizando-circulo-inexistente
-          command: gradle test --tests 'CircleTests.atualizandoCirculoInexistente'
+          command: ./gradlew test --tests 'CircleTests.atualizandoCirculoInexistente'
           timeout: 10
           max-score: 5
 
@@ -125,7 +134,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: adicionar-contato
-          command: gradle test --tests 'ContactTests.adicionarContato'
+          command: ./gradlew test --tests 'ContactTests.adicionarContato'
           timeout: 10
           max-score: 5
 
@@ -134,7 +143,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: adicionar-contato-duplicado
-          command: gradle test --tests 'ContactTests.adicionarContatoDuplicado'
+          command: ./gradlew test --tests 'ContactTests.adicionarContatoDuplicado'
           timeout: 10
           max-score: 5
 
@@ -143,7 +152,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: removendo-contato
-          command: gradle test --tests 'ContactTests.removendoContato'
+          command: ./gradlew test --tests 'ContactTests.removendoContato'
           timeout: 10
           max-score: 5
 
@@ -152,7 +161,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: removendo-contato-inexistente
-          command: gradle test --tests 'ContactTests.removendoContatoInexistente'
+          command: ./gradlew test --tests 'ContactTests.removendoContatoInexistente'
           timeout: 10
           max-score: 5
 
@@ -161,7 +170,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: recuperando-contato
-          command: gradle test --tests 'ContactTests.recuperandoContato'
+          command: ./gradlew test --tests 'ContactTests.recuperandoContato'
           timeout: 10
           max-score: 5
 
@@ -170,7 +179,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: recuperando-contato-inexistene
-          command: gradle test --tests 'ContactTests.recuperandoContatoInexistene'
+          command: ./gradlew test --tests 'ContactTests.recuperandoContatoInexistene'
           timeout: 10
           max-score: 5
 
@@ -179,7 +188,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: recuperando-todos-os-contatos
-          command: gradle test --tests 'ContactTests.recuperandoTodosOsContatos'
+          command: ./gradlew test --tests 'ContactTests.recuperandoTodosOsContatos'
           timeout: 10
           max-score: 5
 
@@ -188,7 +197,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: atualizando-contato
-          command: gradle test --tests 'ContactTests.atualizandoContato'
+          command: ./gradlew test --tests 'ContactTests.atualizandoContato'
           timeout: 10
           max-score: 5
 
@@ -197,7 +206,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: atualizando-inexistente
-          command: gradle test --tests 'ContactTests.atualizandoInexistente'
+          command: ./gradlew test --tests 'ContactTests.atualizandoInexistente'
           timeout: 10
           max-score: 5
 
@@ -206,7 +215,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: favoritando-um-contato
-          command: gradle test --tests 'ContactTests.favoritandoUmContato'
+          command: ./gradlew test --tests 'ContactTests.favoritandoUmContato'
           timeout: 10
           max-score: 5
 
@@ -215,7 +224,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: favoritando-um-contato-inexistente
-          command: gradle test --tests 'ContactTests.favoritandoUmContatoInexistente'
+          command: ./gradlew test --tests 'ContactTests.favoritandoUmContatoInexistente'
           timeout: 10
           max-score: 5
 
@@ -224,7 +233,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: desfavoritando-um-contato
-          command: gradle test --tests 'ContactTests.desfavoritandoUmContato'
+          command: ./gradlew test --tests 'ContactTests.desfavoritandoUmContato'
           timeout: 10
           max-score: 5
 
@@ -233,7 +242,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: desfavoritando-um-contato-inexistente
-          command: gradle test --tests 'ContactTests.desfavoritandoUmContatoInexistente'
+          command: ./gradlew test --tests 'ContactTests.desfavoritandoUmContatoInexistente'
           timeout: 10
           max-score: 5
 
@@ -242,7 +251,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: recuperando-todos-os-favoritos
-          command: gradle test --tests 'ContactTests.recuperandoTodosOsFavoritos'
+          command: ./gradlew test --tests 'ContactTests.recuperandoTodosOsFavoritos'
           timeout: 10
           max-score: 5
 
@@ -251,7 +260,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: adicionar-contato-circulo-existente
-          command: gradle test --tests 'ContactsCircleRelationsTest.adicionarContatoCirculoExistente'
+          command: ./gradlew test --tests 'ContactsCircleRelationsTest.adicionarContatoCirculoExistente'
           timeout: 10
           max-score: 5
 
@@ -260,7 +269,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: adicionar-contato-inexistente-circulo-existente
-          command: gradle test --tests 'ContactsCircleRelationsTest.adicionarContatoInexistenteCirculoExistente'
+          command: ./gradlew test --tests 'ContactsCircleRelationsTest.adicionarContatoInexistenteCirculoExistente'
           timeout: 10
           max-score: 5
 
@@ -269,7 +278,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: adicionar-contato-circulo-inexistente
-          command: gradle test --tests 'ContactsCircleRelationsTest.adicionarContatoCirculoInexistente'
+          command: ./gradlew test --tests 'ContactsCircleRelationsTest.adicionarContatoCirculoInexistente'
           timeout: 10
           max-score: 5
 
@@ -278,7 +287,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: adicionar-contato-duplicado-circulo-existente
-          command: gradle test --tests 'ContactsCircleRelationsTest.adicionarContatoDuplicadoCirculoExistente'
+          command: ./gradlew test --tests 'ContactsCircleRelationsTest.adicionarContatoDuplicadoCirculoExistente'
           timeout: 10
           max-score: 5
 
@@ -287,7 +296,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: adicionar-alem-do-limite
-          command: gradle test --tests 'ContactsCircleRelationsTest.adicionarAlemDoLimite'
+          command: ./gradlew test --tests 'ContactsCircleRelationsTest.adicionarAlemDoLimite'
           timeout: 10
           max-score: 5
 
@@ -296,7 +305,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: adicionar-contato-varios-circulos
-          command: gradle test --tests 'ContactsCircleRelationsTest.adicionarContatoVariosCirculos'
+          command: ./gradlew test --tests 'ContactsCircleRelationsTest.adicionarContatoVariosCirculos'
           timeout: 10
           max-score: 5
 
@@ -305,7 +314,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: removendo-contato-do-circulo
-          command: gradle test --tests 'ContactsCircleRelationsTest.removendoContatoDoCirculo'
+          command: ./gradlew test --tests 'ContactsCircleRelationsTest.removendoContatoDoCirculo'
           timeout: 10
           max-score: 5
 
@@ -314,7 +323,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: removendo-contato-inexistente-do-circulo
-          command: gradle test --tests 'ContactsCircleRelationsTest.removendoContatoInexistenteDoCirculo'
+          command: ./gradlew test --tests 'ContactsCircleRelationsTest.removendoContatoInexistenteDoCirculo'
           timeout: 10
           max-score: 5
 
@@ -323,7 +332,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: removendo-contato-do-circulo-inexistente
-          command: gradle test --tests 'ContactsCircleRelationsTest.removendoContatoDoCirculoInexistente'
+          command: ./gradlew test --tests 'ContactsCircleRelationsTest.removendoContatoDoCirculoInexistente'
           timeout: 10
           max-score: 5
 
@@ -332,7 +341,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: removendo-circulo-que-possui-contatos
-          command: gradle test --tests 'ContactsCircleRelationsTest.removendoCirculoQuePossuiContatos'
+          command: ./gradlew test --tests 'ContactsCircleRelationsTest.removendoCirculoQuePossuiContatos'
           timeout: 10
           max-score: 5
 
@@ -341,7 +350,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: removendo-contatos-que-esta-em-circulos
-          command: gradle test --tests 'ContactsCircleRelationsTest.removendoContatosQueEstaEmCirculos'
+          command: ./gradlew test --tests 'ContactsCircleRelationsTest.removendoContatosQueEstaEmCirculos'
           timeout: 10
           max-score: 5
 
@@ -350,7 +359,7 @@ jobs:
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: circulos-em-comum
-          command: gradle test --tests 'ContactsCircleRelationsTest.circulosEmComum'
+          command: ./gradlew test --tests 'ContactsCircleRelationsTest.circulosEmComum'
           timeout: 10
           max-score: 5
 
