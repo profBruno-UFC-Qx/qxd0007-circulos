@@ -1,11 +1,13 @@
 import model.Contato;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("Gerenciamento de contatos")
 public class ContactTests {
 
 	private static final String JOAQUIM_EMAIL = "joaquim@ufc.br";
@@ -33,27 +35,34 @@ public class ContactTests {
 	}
 
 	@Test
+	@DisplayName("Deve adicionar um contato")
 	public void adicionarContato() {
 		assertTrue(gcont.criarContato(JAMES, JAMES_EMAIL), "Contato valido, deve ser adicionado");
 		assertEquals(1, gcont.getNumeroDeContatos(), "Quantidade de contatos errada");
+		assertEquals(james, gcont.getContato(JAMES), "Contato adicionado deve poder ser recuperado");
 	}
 
 	@Test
+	@DisplayName("Não deve adicionar contato com identificador duplicado")
 	public void adicionarContatoDuplicado() {
 		assertTrue(gcont.criarContato(JAMES, JAMES_EMAIL), "Contato valido, deve ser adicionado");
 		assertFalse(gcont.criarContato(JAMES, "jesus2@ufc.com"), "Contato com id duplicado");
 		assertEquals(1, gcont.getNumeroDeContatos(), "Quantidade de contatos errada");
+		assertEquals(JAMES_EMAIL, gcont.getContato(JAMES).getEmail(), "O email do contato original deve ser mantido");
 	}
 
 	@Test
+	@DisplayName("Deve remover um contato existente")
 	public void removendoContato() {
 		assertTrue(gcont.criarContato(JAMES, JAMES_EMAIL), "Contato valido, deve ser adicionado");
-		assertEquals(1, gcont.getNumeroDeContatos(), "Quantidade de contatos errada" );
+		assertEquals(1, gcont.getNumeroDeContatos(), "Quantidade de contatos errada");
 		assertTrue(gcont.removerContato(JAMES), "Contato deve ser removido");
 		assertEquals(0, gcont.getNumeroDeContatos(), "Quantidade de contatos errada");
+		assertNull(gcont.getContato(JAMES), "Contato removido nao deve ser encontrado");
 	}
 
 	@Test
+	@DisplayName("Não deve remover um contato inexistente")
 	public void removendoContatoInexistente() {
 		assertTrue(gcont.criarContato(JAMES, JAMES_EMAIL), "Contato valido, deve ser adicionado");
 		assertEquals(1, gcont.getNumeroDeContatos(), "Quantidade de contatos errada");
@@ -62,62 +71,66 @@ public class ContactTests {
 	}
 
 	@Test
+	@DisplayName("Deve recuperar um contato existente pelo identificador")
 	public void recuperandoContato() {
 		assertTrue(gcont.criarContato(JAMES, JAMES_EMAIL), "Contato valido, deve ser adicionado");
-		assertEquals(1, gcont.getNumeroDeContatos(), "Quantidade de contatos errada");
-		Contato james = gcont.getContato(JAMES);
-		assertEquals(james, this.james, "Contato recuperado diferente do buscado");
+		Contato recuperado = gcont.getContato(JAMES);
+		assertEquals(james, recuperado, "Contato recuperado diferente do buscado");
+		assertEquals(JAMES_EMAIL, recuperado.getEmail(), "Email do contato recuperado esta errado");
 	}
 
 	@Test
+	@DisplayName("Deve retornar null ao buscar um contato inexistente")
 	public void recuperandoContatoInexistene() {
 		assertTrue(gcont.criarContato(JAMES, JAMES_EMAIL), "Contato valido, deve ser adicionado");
-		assertEquals(1, gcont.getNumeroDeContatos(), "Quantidade de contatos errada");
-		assertEquals(null, gcont.getContato("ramiro"), "Contato nao existente");
+		assertNull(gcont.getContato("ramiro"), "Contato nao existente");
 	}
 
 	@Test
+	@DisplayName("Deve listar todos os contatos em ordem alfabética")
 	public void recuperandoTodosOsContatos() {
 		assertTrue(gcont.criarContato(JAMES, JAMES_EMAIL), "Contato valido, deve ser adicionado");
 		assertTrue(gcont.criarContato(ANA, ANA_EMAIL), "Contato valido, deve ser adicionado");
 		assertTrue(gcont.criarContato(JOSE, JOSE_EMAIL), "Contato valido, deve ser adicionado");
 
-		assertEquals(Arrays.asList(ana, james, jose), gcont.getTodosContatos(), "Lista de contatos errada");
+		assertEquals(List.of(ana, james, jose), gcont.getTodosContatos(), "Lista de contatos errada");
 	}
 
 	@Test
+	@DisplayName("Deve atualizar o email de um contato existente")
 	public void atualizandoContato() {
 		assertTrue(gcont.criarContato(JAMES, JAMES_EMAIL), "Contato valido, deve ser adicionado");
-		assertEquals(1, gcont.getNumeroDeContatos(), "Quantidade de contatos errada");
 
-		james.setEmail("novo@ufc.br");
-
-		assertTrue(gcont.atualizarContato(james), "Contato valido, deve ser atualizado");
-		Contato james = gcont.getContato(JAMES);
-		assertEquals(this.james, james, "Contato nao foi atualizado corretamente");
+		assertTrue(gcont.atualizarContato(new Contato(JAMES, "novo@ufc.br")), "Contato valido, deve ser atualizado");
+		assertEquals("novo@ufc.br", gcont.getContato(JAMES).getEmail(), "Email do contato nao foi atualizado");
+		assertEquals(1, gcont.getNumeroDeContatos(), "Atualizar nao deve criar um novo contato");
 	}
 
 	@Test
+	@DisplayName("Não deve atualizar um contato inexistente")
 	public void atualizandoInexistente() {
 		assertFalse(gcont.atualizarContato(james), "Contato nao existente, logo nao pode ser atualizado");
+		assertNull(gcont.getContato(JAMES), "Atualizar nao deve cadastrar o contato");
 	}
 
 	@Test
+	@DisplayName("Deve favoritar um contato existente")
 	public void favoritandoUmContato() {
 		assertTrue(gcont.criarContato(JAMES, JAMES_EMAIL), "Contato valido, deve ser adicionado");
 		assertTrue(gcont.favoritar(JAMES), "Contato deve ser marcado como favorito");
 		assertTrue(gcont.eFavorito(JAMES), "Contato esta na lista de favoritos");
 		assertFalse(gcont.eFavorito(ANA), "Contato nao esta na lista de favoritos");
-
 	}
 
 	@Test
+	@DisplayName("Não deve favoritar um contato inexistente")
 	public void favoritandoUmContatoInexistente() {
 		assertFalse(gcont.favoritar(JAMES), "Contato nao existe");
 		assertFalse(gcont.eFavorito(JAMES), "Contato nao esta na lista de favoritos");
 	}
 
 	@Test
+	@DisplayName("Deve desfavoritar um contato favorito")
 	public void desfavoritandoUmContato() {
 		assertTrue(gcont.criarContato(JAMES, JAMES_EMAIL), "Contato valido, deve ser adicionado");
 		assertTrue(gcont.favoritar(JAMES), "Contato deve ser marcado como favorito");
@@ -128,12 +141,14 @@ public class ContactTests {
 	}
 
 	@Test
+	@DisplayName("Não deve desfavoritar um contato inexistente")
 	public void desfavoritandoUmContatoInexistente() {
 		assertFalse(gcont.desfavoritar(JAMES), "Contato nao existe");
 		assertFalse(gcont.eFavorito(JAMES), "Contato nao esta na lista de favoritos");
 	}
 
 	@Test
+	@DisplayName("Deve listar os favoritos em ordem alfabética e retirar da lista contatos desfavoritados ou removidos")
 	public void recuperandoTodosOsFavoritos() {
 		assertTrue(gcont.criarContato(JAMES, JAMES_EMAIL), "Contato valido, deve ser adicionado");
 		assertTrue(gcont.criarContato(MARIO, MARIO_EMAIL), "Contato valido, deve ser adicionado");
@@ -146,15 +161,12 @@ public class ContactTests {
 		assertTrue(gcont.eFavorito(ANA), "O contato esta na lista de favoritos");
 		assertFalse(gcont.eFavorito(JOSE), "O contato nao esta na lista de favoritos");
 
-		assertEquals(Arrays.asList(ana, james, mario), gcont.getFavoritos(), "Lista de favoritos errada");
+		assertEquals(List.of(ana, james, mario), gcont.getFavoritos(), "Lista de favoritos errada");
 
 		assertTrue(gcont.desfavoritar(ANA), "Contato deve ser removido dos favoritos");
+		assertEquals(List.of(james, mario), gcont.getFavoritos(), "Lista de favoritos errada apos desfavoritar");
 
-		assertEquals(Arrays.asList(james, mario), gcont.getFavoritos(), "Remocao de favoritos errada");
-
-		assertTrue(gcont.removerContato(MARIO), "Contato deve ser removido dos favoritos");
-
-		assertEquals(Arrays.asList(james), gcont.getFavoritos(), "Remocao de favoritos errada");
-
+		assertTrue(gcont.removerContato(MARIO), "Contato deve ser removido");
+		assertEquals(List.of(james), gcont.getFavoritos(), "Contato removido deve sair dos favoritos");
 	}
 }

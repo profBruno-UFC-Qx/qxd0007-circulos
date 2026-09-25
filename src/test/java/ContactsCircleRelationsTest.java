@@ -3,13 +3,14 @@ import model.Contato;
 import exceptions.CirculoNotFoundException;
 import exceptions.ContatoNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("Relacionamento entre contatos e círculos")
 public class ContactsCircleRelationsTest {
 
 	private static final String AMIGOS = "amigos";
@@ -46,47 +47,59 @@ public class ContactsCircleRelationsTest {
 
 
 	@Test
+	@DisplayName("Deve adicionar um contato existente a um círculo existente")
 	public void adicionarContatoCirculoExistente() throws CirculoNotFoundException, ContatoNotFoundException {
 		gcont.criarCirculo(FAMILIA, 3);
 		gcont.criarContato(JAMES, JAMES_EMAIL);
 		assertTrue(gcont.adicionarContatoAoCirculo(JAMES, FAMILIA), "Contato deve ser adicionado ao circulo");
 		assertEquals(1, gcont.getCirculo(FAMILIA).getNumeroDeContatos(), "Numero de contatos no circulo errado");
-		assertEquals(Arrays.asList(familia), gcont.recuperarCirculosDoContato(JAMES), "Lista de circulos do contato esta errada");
-		assertEquals(Arrays.asList(james), gcont.recuperarContatosDoCirculo("familia"), "Lista de contatos de um circulo esta errada");
+		assertEquals(List.of(familia), gcont.recuperarCirculosDoContato(JAMES), "Lista de circulos do contato esta errada");
+		assertEquals(List.of(james), gcont.recuperarContatosDoCirculo(FAMILIA), "Lista de contatos de um circulo esta errada");
 	}
 
 	@Test
+	@DisplayName("Deve lançar ContatoNotFoundException ao adicionar contato inexistente a um círculo")
 	public void adicionarContatoInexistenteCirculoExistente() {
 		gcont.criarCirculo(FAMILIA, 3);
 
-		assertThrows(ContatoNotFoundException.class, () -> gcont.adicionarContatoAoCirculo(JAMES, FAMILIA));
+		ContatoNotFoundException e = assertThrows(ContatoNotFoundException.class, () -> gcont.adicionarContatoAoCirculo(JAMES, FAMILIA));
+		assertEquals(JAMES, e.getContatoNaoEncontrado(), "A excecao nao retornou o id do contato que nao existe");
 		assertEquals(0, gcont.getCirculo(FAMILIA).getNumeroDeContatos(), "Numero de contatos no circulo errado");
-
 	}
 
 	@Test
-	public void adicionarContatoCirculoInexistente() throws CirculoNotFoundException, Exception {
+	@DisplayName("Deve lançar CirculoNotFoundException ao adicionar contato a um círculo inexistente")
+	public void adicionarContatoCirculoInexistente() throws ContatoNotFoundException {
 		gcont.criarContato(JAMES, JAMES_EMAIL);
 
 		CirculoNotFoundException e = assertThrows(CirculoNotFoundException.class, () -> gcont.adicionarContatoAoCirculo(JAMES, FAMILIA));
-		assertTrue(e.getCirculoNaoEncontrado() == FAMILIA, "A excecao nao retornou o id do circulo que nao existe");
+		assertEquals(FAMILIA, e.getCirculoNaoEncontrado(), "A excecao nao retornou o id do circulo que nao existe");
 
-		assertEquals(gcont.getCirculo(FAMILIA), null, "Circulo nao existente");
-		assertEquals(Collections.EMPTY_LIST, gcont.recuperarCirculosDoContato(JAMES), "Contato nao esta em nenhum circulo");
+		assertNull(gcont.getCirculo(FAMILIA), "Circulo nao existente");
+		assertEquals(List.of(), gcont.recuperarCirculosDoContato(JAMES), "Contato nao esta em nenhum circulo");
 	}
 
 	@Test
+	@DisplayName("Deve lançar CirculoNotFoundException quando nem o contato nem o círculo existem")
+	public void adicionarContatoECirculoInexistentes() {
+		CirculoNotFoundException e = assertThrows(CirculoNotFoundException.class, () -> gcont.adicionarContatoAoCirculo(JAMES, FAMILIA));
+		assertEquals(FAMILIA, e.getCirculoNaoEncontrado(), "A excecao nao retornou o id do circulo que nao existe");
+	}
+
+	@Test
+	@DisplayName("Não deve adicionar o mesmo contato duas vezes ao mesmo círculo")
 	public void adicionarContatoDuplicadoCirculoExistente() throws CirculoNotFoundException, ContatoNotFoundException {
 		gcont.criarCirculo(FAMILIA, 3);
 		gcont.criarContato(JAMES, JAMES_EMAIL);
 		gcont.adicionarContatoAoCirculo(JAMES, FAMILIA);
 		assertFalse(gcont.adicionarContatoAoCirculo(JAMES, FAMILIA), "Contato ja esta no circulo");
 		assertEquals(1, gcont.getCirculo(FAMILIA).getNumeroDeContatos(), "Numero de contatos no circulo errado");
-		assertEquals(Arrays.asList(familia), gcont.recuperarCirculosDoContato(JAMES), "Lista de circulos do contato esta errada");
-		assertEquals(Arrays.asList(james), gcont.recuperarContatosDoCirculo("familia"), "Lista de contatos de um circulo esta errada");
+		assertEquals(List.of(familia), gcont.recuperarCirculosDoContato(JAMES), "Lista de circulos do contato esta errada");
+		assertEquals(List.of(james), gcont.recuperarContatosDoCirculo(FAMILIA), "Lista de contatos de um circulo esta errada");
 	}
 
 	@Test
+	@DisplayName("Não deve adicionar contato a um círculo que atingiu o limite")
 	public void adicionarAlemDoLimite() throws CirculoNotFoundException, ContatoNotFoundException {
 		gcont.criarCirculo(FAMILIA, 3);
 
@@ -99,9 +112,13 @@ public class ContactsCircleRelationsTest {
 		assertTrue(gcont.adicionarContatoAoCirculo(JOSE, FAMILIA), "Contato deve ser adicionado ao circulo");
 		assertTrue(gcont.adicionarContatoAoCirculo(ANA, FAMILIA), "Contato deve ser adicionado ao circulo");
 		assertFalse(gcont.adicionarContatoAoCirculo(JOAQUIM, FAMILIA), "Limite do circulo atingido");
+
+		assertEquals(3, gcont.getCirculo(FAMILIA).getNumeroDeContatos(), "Numero de contatos no circulo errado");
+		assertEquals(List.of(), gcont.recuperarCirculosDoContato(JOAQUIM), "Contato recusado nao deve estar no circulo");
 	}
 
 	@Test
+	@DisplayName("Deve permitir que um contato participe de vários círculos")
 	public void adicionarContatoVariosCirculos() throws CirculoNotFoundException, ContatoNotFoundException {
 		gcont.criarCirculo(FAMILIA, 3);
 		gcont.criarCirculo(AMIGOS, 2);
@@ -116,12 +133,12 @@ public class ContactsCircleRelationsTest {
 
 		assertTrue(gcont.adicionarContatoAoCirculo(JAMES, AMIGOS), "Contato deve ser adicionado ao circulo");
 
-		assertEquals(Arrays.asList(amigos, familia), gcont.recuperarCirculosDoContato(JAMES), "Lista de circulos do contato esta errada");
-
-		assertEquals(Arrays.asList(james, jose, mario), gcont.recuperarContatosDoCirculo(FAMILIA), "Lista de contatos de um circulo esta errada");
+		assertEquals(List.of(amigos, familia), gcont.recuperarCirculosDoContato(JAMES), "Lista de circulos do contato esta errada");
+		assertEquals(List.of(james, jose, mario), gcont.recuperarContatosDoCirculo(FAMILIA), "Lista de contatos de um circulo esta errada");
 	}
 
 	@Test
+	@DisplayName("Deve remover um contato de um círculo")
 	public void removendoContatoDoCirculo() throws CirculoNotFoundException, ContatoNotFoundException {
 		gcont.criarCirculo(FAMILIA, 3);
 		gcont.criarCirculo(AMIGOS, 2);
@@ -131,29 +148,69 @@ public class ContactsCircleRelationsTest {
 		gcont.adicionarContatoAoCirculo(JAMES, FAMILIA);
 		gcont.adicionarContatoAoCirculo(JAMES, AMIGOS);
 
-		assertTrue(gcont.removerContatoDoCirculo(JAMES, AMIGOS), "Contato deve ser removido ao circulo");
+		assertTrue(gcont.removerContatoDoCirculo(JAMES, AMIGOS), "Contato deve ser removido do circulo");
 
-		assertEquals(Arrays.asList(familia), gcont.recuperarCirculosDoContato(JAMES), "Remocao de contato errada");
+		assertEquals(List.of(familia), gcont.recuperarCirculosDoContato(JAMES), "Lista de circulos do contato esta errada");
+		assertEquals(List.of(), gcont.recuperarContatosDoCirculo(AMIGOS), "Lista de contatos do circulo esta errada");
 	}
 
 	@Test
+	@DisplayName("Não deve remover de um círculo um contato que não faz parte dele")
+	public void removendoContatoQueNaoEstaNoCirculo() throws CirculoNotFoundException, ContatoNotFoundException {
+		gcont.criarCirculo(FAMILIA, 3);
+		gcont.criarContato(JAMES, JAMES_EMAIL);
+		gcont.criarContato(JOSE, JOSE_EMAIL);
+		gcont.adicionarContatoAoCirculo(JAMES, FAMILIA);
+
+		assertFalse(gcont.removerContatoDoCirculo(JOSE, FAMILIA), "Contato nao esta no circulo");
+		assertEquals(List.of(james), gcont.recuperarContatosDoCirculo(FAMILIA), "Lista de contatos do circulo esta errada");
+	}
+
+	@Test
+	@DisplayName("Remover um contato de um círculo cheio deve liberar espaço para outro")
+	public void removendoContatoLiberaEspacoNoCirculo() throws CirculoNotFoundException, ContatoNotFoundException {
+		gcont.criarCirculo(AMIGOS, 2);
+		gcont.criarContato(JAMES, JAMES_EMAIL);
+		gcont.criarContato(MARIO, MARIO_EMAIL);
+		gcont.criarContato(ANA, ANA_EMAIL);
+
+		gcont.adicionarContatoAoCirculo(JAMES, AMIGOS);
+		gcont.adicionarContatoAoCirculo(MARIO, AMIGOS);
+		assertFalse(gcont.adicionarContatoAoCirculo(ANA, AMIGOS), "Limite do circulo atingido");
+
+		gcont.removerContatoDoCirculo(JAMES, AMIGOS);
+		assertTrue(gcont.adicionarContatoAoCirculo(ANA, AMIGOS), "A remocao deveria ter liberado espaco no circulo");
+		assertEquals(List.of(ana, mario), gcont.recuperarContatosDoCirculo(AMIGOS), "Lista de contatos do circulo esta errada");
+	}
+
+	@Test
+	@DisplayName("Deve lançar ContatoNotFoundException ao remover contato inexistente de um círculo")
 	public void removendoContatoInexistenteDoCirculo() throws CirculoNotFoundException, ContatoNotFoundException {
 		gcont.criarCirculo(FAMILIA, 3);
 		gcont.criarContato(JAMES, JAMES_EMAIL);
 		gcont.adicionarContatoAoCirculo(JAMES, FAMILIA);
 
 		ContatoNotFoundException e = assertThrows(ContatoNotFoundException.class, () -> gcont.removerContatoDoCirculo("margarida", FAMILIA));
-		assertTrue(e.getContatoNaoEncontrado() == "margarida", "A excecao nao retornou o id do contato que nao existe");
+		assertEquals("margarida", e.getContatoNaoEncontrado(), "A excecao nao retornou o id do contato que nao existe");
 		assertEquals(1, gcont.getCirculo(FAMILIA).getNumeroDeContatos(), "Numero de contatos no circulo errado");
 	}
 
 	@Test
+	@DisplayName("Deve lançar CirculoNotFoundException ao remover contato de um círculo inexistente")
 	public void removendoContatoDoCirculoInexistente() {
 		CirculoNotFoundException e = assertThrows(CirculoNotFoundException.class, () -> gcont.removerContatoDoCirculo(JAMES, FAMILIA));
-		assertTrue(e.getCirculoNaoEncontrado() == FAMILIA, "A excecao nao retornou o id do circulo que nao existe");
+		assertEquals(FAMILIA, e.getCirculoNaoEncontrado(), "A excecao nao retornou o id do circulo que nao existe");
 	}
 
 	@Test
+	@DisplayName("Deve lançar CirculoNotFoundException ao listar os contatos de um círculo inexistente")
+	public void recuperandoContatosDeCirculoInexistente() {
+		CirculoNotFoundException e = assertThrows(CirculoNotFoundException.class, () -> gcont.recuperarContatosDoCirculo(FAMILIA));
+		assertEquals(FAMILIA, e.getCirculoNaoEncontrado(), "A excecao nao retornou o id do circulo que nao existe");
+	}
+
+	@Test
+	@DisplayName("Remover um círculo deve retirá-lo da lista de círculos dos seus contatos")
 	public void removendoCirculoQuePossuiContatos() throws CirculoNotFoundException, ContatoNotFoundException {
 
 		gcont.criarCirculo(FAMILIA, 3);
@@ -178,14 +235,13 @@ public class ContactsCircleRelationsTest {
 
 		assertTrue(gcont.removerCirculo(FAMILIA), "O circulo deve ser removido");
 
-		assertEquals(Arrays.asList(amigos, trabalho), gcont.recuperarCirculosDoContato(JAMES), "Lista de circulos do contato esta errada");
-		
-		assertEquals(Collections.EMPTY_LIST, gcont.recuperarCirculosDoContato(JOSE), "Lista de circulos do contato esta errada");
-		assertEquals(null, gcont.getCirculo("familia"), "Circulo nao existe mais");
-
+		assertEquals(List.of(amigos, trabalho), gcont.recuperarCirculosDoContato(JAMES), "Lista de circulos do contato esta errada");
+		assertEquals(List.of(), gcont.recuperarCirculosDoContato(JOSE), "Lista de circulos do contato esta errada");
+		assertNull(gcont.getCirculo(FAMILIA), "Circulo nao existe mais");
 	}
-	
+
 	@Test
+	@DisplayName("Remover um contato deve retirá-lo de todos os círculos")
 	public void removendoContatosQueEstaEmCirculos() throws CirculoNotFoundException, ContatoNotFoundException {
 
 		gcont.criarCirculo(FAMILIA, 3);
@@ -210,18 +266,18 @@ public class ContactsCircleRelationsTest {
 
 		assertTrue(gcont.removerContato(JAMES), "O contato deve ser removido");
 
-		assertEquals(Arrays.asList(jose, mario), gcont.recuperarContatosDoCirculo("familia"), "A lista de contatos do circulo esta errada");
-		assertEquals(Arrays.asList(ana, joaquim), gcont.recuperarContatosDoCirculo("trabalho"), "A lista de contatos do circulo esta errada");
-		assertEquals(Collections.EMPTY_LIST, gcont.recuperarContatosDoCirculo("amigos"), "A lista de contatos do circulo esta errada");
+		assertEquals(List.of(jose, mario), gcont.recuperarContatosDoCirculo(FAMILIA), "A lista de contatos do circulo esta errada");
+		assertEquals(List.of(ana, joaquim), gcont.recuperarContatosDoCirculo(TRABALHO), "A lista de contatos do circulo esta errada");
+		assertEquals(List.of(), gcont.recuperarContatosDoCirculo(AMIGOS), "A lista de contatos do circulo esta errada");
 
 		ContatoNotFoundException e = assertThrows(ContatoNotFoundException.class, () -> gcont.recuperarCirculosDoContato(JAMES));
-		assertTrue(e.getContatoNaoEncontrado() ==  JAMES, "A excecao nao retornou o id do contato que nao existe");
+		assertEquals(JAMES, e.getContatoNaoEncontrado(), "A excecao nao retornou o id do contato que nao existe");
 
-		assertEquals(null, gcont.getContato(JAMES));
-
+		assertNull(gcont.getContato(JAMES), "Contato nao existe mais");
 	}
 
 	@Test
+	@DisplayName("Deve listar em ordem alfabética os círculos em comum entre dois contatos")
 	public void circulosEmComum() throws CirculoNotFoundException, ContatoNotFoundException {
 		gcont.criarCirculo(FAMILIA, 3);
 		gcont.criarCirculo(AMIGOS, 2);
@@ -243,10 +299,21 @@ public class ContactsCircleRelationsTest {
 		gcont.adicionarContatoAoCirculo(JAMES, AMIGOS);
 		gcont.adicionarContatoAoCirculo(MARIO, AMIGOS);
 
-		assertEquals(Arrays.asList(trabalho), gcont.getCirculosEmComum(JAMES, ANA));
-		assertEquals(Collections.EMPTY_LIST, gcont.getCirculosEmComum(JAMES, JOSE));
-		assertEquals(Arrays.asList(amigos, familia), gcont.getCirculosEmComum(JAMES, MARIO));
+		assertEquals(List.of(trabalho), gcont.getCirculosEmComum(JAMES, ANA));
+		assertEquals(List.of(), gcont.getCirculosEmComum(JAMES, JOSE));
+		assertEquals(List.of(amigos, familia), gcont.getCirculosEmComum(JAMES, MARIO));
+	}
 
+	@Test
+	@DisplayName("Deve lançar ContatoNotFoundException ao buscar círculos em comum com um contato inexistente")
+	public void circulosEmComumContatoInexistente() {
+		gcont.criarContato(JAMES, JAMES_EMAIL);
+
+		ContatoNotFoundException e1 = assertThrows(ContatoNotFoundException.class, () -> gcont.getCirculosEmComum(JAMES, "margarida"));
+		assertEquals("margarida", e1.getContatoNaoEncontrado(), "A excecao nao retornou o id do contato que nao existe");
+
+		ContatoNotFoundException e2 = assertThrows(ContatoNotFoundException.class, () -> gcont.getCirculosEmComum("margarida", JAMES));
+		assertEquals("margarida", e2.getContatoNaoEncontrado(), "A excecao nao retornou o id do contato que nao existe");
 	}
 
 }
